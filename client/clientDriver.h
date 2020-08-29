@@ -8,4 +8,21 @@
 #ifndef KRUOR_CLIENTDRIVER_H
 #define KRUOR_CLIENTDRIVER_H
 
+#include <netdb.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define PORT 12056
+#define SA struct sockaddr
+#define HOST_NAME "localhost"
+#define BUFFER_MAX 1024
+#define HOSTNAME_MAX 256
+
+
+void chatWithServer();
+
+void defineSocketToServer(char * host, int portNumber);
+
 #endif //KRUOR_CLIENTDRIVER_H

@@ -40,3 +40,4 @@ void getType(char *buffer) {
         strcpy(buffer, "Other");
     #endif
 }
+

@@ -21,7 +21,7 @@
  * to send back
  * @param buffer
  */
-void processCommand(char *buffer);
+void processLabCommand(char *buffer);
 
 /**
  * Hosts the main server

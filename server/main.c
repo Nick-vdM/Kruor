@@ -3,15 +3,19 @@
 // https://www.linkedin.com/in/nick-vd-merwe/
 // nick.jvdmerwe@gmail.com
 
+#include <stdlib.h>
 #include "serverDriver.h"
 
-#define BUFF_MAX 1024
 #define PORT 12056
-#define SA struct sockaddr
 
-int main() {
-    int socketFD = getServerSocket(PORT, 1);
-    socketFD = accept(socketFD, 0, 0);
-    host(socketFD);
-    close(socketFD);
+int main(int argc, char * argv[]) {
+    int port = PORT;
+    if(argc == 2){
+        port = atoi(argv[1]);
+    } else {
+        printf("Protip! You can specify the port to host the server on "
+               "using ./server <PORT>\n");
+    }
+    int socketFileDescriptor = getServerSocket(port, 5);
+    host(socketFileDescriptor);
 }
