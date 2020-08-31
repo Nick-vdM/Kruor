@@ -29,7 +29,7 @@ void getType(char *buffer) {
     #elif _WIN64
         strcpy(buffer, "Windows 64-bit");
     #elif __APPLE__ || __MACH__
-        strcpy(buffer, "Mac OSC");
+        strcpy(buffer, "Mac OSX");
     #elif __linux__
         strcpy(buffer, "Linux");
     #elif __FreeBSD__

@@ -23,6 +23,8 @@
  */
 void processLabCommand(char *buffer);
 
+void hostWithSelect(int masterSocketFD, FILE * out);
+
 /**
  * Hosts the main server
  * @param socketFD
@@ -35,7 +37,7 @@ void host(int socketFD);
  * @param backlog the maximum number of requests in the queue
  * @return socket file descriptor
  */
-int getServerSocket(int portNumber, int backlog);
+int openTCPSocket(int portNumber, int backlog);
 
 
 #endif //KRUOR_SERVERDRIVER_H

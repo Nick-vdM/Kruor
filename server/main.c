@@ -16,6 +16,7 @@ int main(int argc, char * argv[]) {
         printf("Protip! You can specify the port to host the server on "
                "using ./server <PORT>\n");
     }
-    int socketFileDescriptor = getServerSocket(port, 5);
+    int socketFileDescriptor = openTCPSocket(port, 5);
+
     host(socketFileDescriptor);
 }
