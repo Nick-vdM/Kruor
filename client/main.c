@@ -19,8 +19,8 @@ int main(int argc, char * argv[]){
                "./client <IP> <PORT>\n");
     }
 
-    defineSocketToServer(hostName, port);
+    int socketFD = defineSocketToServer(hostName, port);
     printf("Connected to server!\n");
-    chatWithServer();
+    chatWithServer(socketFD);
     return EXIT_SUCCESS;
 }

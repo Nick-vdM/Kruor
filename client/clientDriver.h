@@ -21,8 +21,8 @@
 #define HOSTNAME_MAX 256
 
 
-void chatWithServer();
+void chatWithServer(int socketFD);
 
-void defineSocketToServer(char * host, int portNumber);
+int defineSocketToServer(char * host, int portNumber);
 
 #endif //KRUOR_CLIENTDRIVER_H

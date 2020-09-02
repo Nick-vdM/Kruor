@@ -24,8 +24,6 @@ void getHost(char *buffer);
  */
 void getType(char *buffer);
 
-void processCommand(char * command, int socketFileDescriptor, int clientID);
-
 void processLabCommand(char * buffer);
 
 #endif //KRUOR_SERVERTOOLS_H
