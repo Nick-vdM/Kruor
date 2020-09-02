@@ -6,7 +6,7 @@
 #ifndef KRUOR_SERVERDRIVER_H
 #define KRUOR_SERVERDRIVER_H
 
-#define BUFF_MAX 1024
+#define BUFFER_MAX 1024
 #define HOSTNAME_MAX 1024
 #define SA struct sockaddr
 
@@ -25,11 +25,7 @@ void processLabCommand(char *buffer);
 
 void hostWithSelect(int masterSocketFD, FILE * out);
 
-/**
- * Hosts the main server
- * @param socketFD
- */
-void host(int socketFD);
+_Noreturn void manageConnections(const int socketFileDescriptor, const int maximumClients);
 
 /**
  * Handles the socket, bind and listen parts of a socket

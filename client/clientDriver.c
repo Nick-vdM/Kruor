@@ -49,7 +49,7 @@ int measureFile(FILE *filePointer) {
     // Counts the number of letters in a file
     fseek(filePointer, 0, SEEK_END);
     int length = ftell(filePointer); // include the end of file
-    fseek(filePointer, 0, SEEK_SET);
+    rewind(filePointer);
     return length;
 }
 
@@ -77,7 +77,6 @@ int sendFiles() {
         sprintf(fileSizeString, "%d\n\0", fileSize);
         write(SOCKET, fileSizeString, sizeof(fileSizeString));
         char fileText[fileSize];
-        filePointer = fopen(fileRequest, "r+");
         loadInFile(fileText, filePointer);
         // now send that over to the server
         write(SOCKET, fileText, fileSize);
@@ -109,7 +108,7 @@ void chatWithServer() {
         printf(">");
         // Would prefer to use gets(), however, it doesn't append a new line
         // to the end of the input and the server requires it
-        while((buffer[bufferIndex++] = getchar()) != '\n');
+        while ((buffer[bufferIndex++] = getchar()) != '\n');
         if (strncmp(buffer, "quit", 4) == 0) {
             break;
         }
