@@ -24,6 +24,6 @@ void getHost(char *buffer);
  */
 void getType(char *buffer);
 
-void processLabCommand(char * buffer);
+void processLabCommand(char *buffer);
 
 #endif //KRUOR_SERVERTOOLS_H

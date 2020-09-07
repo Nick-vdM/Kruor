@@ -65,7 +65,7 @@ int split(char *string, char ***toFill, char split) {
     // rest don't so its formatted like this
     char stringCopy[BUFFER_MAX];
     strcpy(stringCopy, string);
-    char *temp = stringCopy; // needs to be a char*, not char[]
+    char *temp = stringCopy; // needs to be a char*, not char[] one two
     int index = 0;
     while ((token = strtok_r(temp, " ", &temp))) {
         strcpy((*toFill)[index++], token);
@@ -98,6 +98,7 @@ int measureFile(FILE *filePointer) {
     // Counts the number of letters in a file
     fseek(filePointer, 0, SEEK_END);
     int length = ftell(filePointer); // include the end of file
+    fseek(filePointer, 0, SEEK_SET);
     rewind(filePointer);
     return length;
 }
@@ -234,7 +235,6 @@ int runCommand(char *command, int commandSize, int socketFD) {
     // Now we read the file from them
     read(socketFD, fileText, fileSize);
     if (forced) {
-        printf("String: %s\n Size %d\n Name %s", fileText, fileSize, splitCommand[words - 1]);
         saveFile(fileText, fileSize, splitCommand[words - 1]);
     } else {
         // We can just use the printXLines function from before
