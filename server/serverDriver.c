@@ -17,6 +17,27 @@
 
 #define TRUE 1
 
+
+void processCommand(char *command, int socketFileDescriptor, int clientID) {
+    if (strncmp(command, "put", 3) == 0) {
+        printf("[System] Downloading file(s) from %d\n", clientID);
+        downloadProgram(command, socketFileDescriptor);
+    } else if ((strncmp(command, "get", 3)) == 0) {
+        printf("[System] Sending file to %d\n", clientID);
+        getCommand(command, socketFileDescriptor);
+    } else if ((strncmp(command, "run", 3)) == 0) {
+        printf("[System] Running program...\n");
+        runCommand(command, socketFileDescriptor);
+    } else if ((strncmp(command, "list", 4)) == 0) {
+        printf("Incomplete command. Will be completed soon\n");
+        strcpy(command, "Unknown command");
+    } else {
+        printf("Unknown command\n");
+        strcpy(command, "Incomplete command");
+    }
+    printf("Finished processing command\n");
+}
+
 /**
  * Branches off and handles the socket
  * @param socketFileDescriptor

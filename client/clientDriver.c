@@ -35,6 +35,53 @@ void reportTime() {
     printf("Server took %.3lf milliseconds to respond\n", responseTime);
 }
 
+
+int countOccurrences(char const *string, char token) {
+    int count = 0;
+    for (int i = 0; string[i] != '\0'; i++) {
+        if (string[i] == token) count++;
+    }
+    return count;
+}
+
+/**
+ * Splits the string into tokens using strtok
+ * @param string the command
+ * @param toFill data to fill in with the split
+ * @param split the token to split by
+ * @return Number of words
+ */
+int split(char *string, char ***toFill, char split) {
+    // First count the number of times the character appears and add
+    // one for how many words it'll split into
+    int words = countOccurrences(string, split) + 1;
+    (*toFill) = (char **) malloc(sizeof(char *) * words);
+    for (int i = 0; i < words; i++) {
+        (*toFill)[i] = (char *) malloc(sizeof(char) * MAX_PATH_LENGTH);
+    }
+    char *token;
+
+    // The first split needs the string while the
+    // rest don't so its formatted like this
+    char stringCopy[BUFFER_MAX];
+    strcpy(stringCopy, string);
+    char *temp = stringCopy; // needs to be a char*, not char[]
+    int index = 0;
+    while ((token = strtok_r(temp, " ", &temp))) {
+        strcpy((*toFill)[index++], token);
+    }
+
+    // Make sure our last word has no \n character
+    for (int i = 0; i < MAX_PATH_LENGTH; i++) {
+        if ((*toFill)[words - 1][i] == '\n') {
+            (*toFill)[words - 1][i] = '\0';
+        } else if ((*toFill)[words - 1][i] == '\n') {
+            break; // there was no newline
+        }
+    }
+
+    return words;
+}
 // ==========================================================================
 
 
@@ -55,13 +102,13 @@ int measureFile(FILE *filePointer) {
     return length;
 }
 
-int transferRequestedFile(char *fileRequest, int socketFD) {
+void transferRequestedFile(char *fileRequest, int socketFD) {
     // First, open a file
     printf("Opening %s\n", fileRequest);
     FILE *filePointer = fopen(fileRequest, "r+");
     if (filePointer == NULL) {
         fprintf(stderr, "Failed to open \'%s\'\n", fileRequest);
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
 
     int fileSize = measureFile(filePointer);
@@ -69,26 +116,13 @@ int transferRequestedFile(char *fileRequest, int socketFD) {
     sprintf(fileSizeString, "%d\n\0", fileSize);
     write(socketFD, fileSizeString, sizeof(fileSizeString));
     char fileText[fileSize];
-    filePointer = fopen(fileRequest, "r+");
     loadInFile(fileText, filePointer);
     // now send that over to the server
     write(socketFD, fileText, fileSize);
     fclose(filePointer);
 }
 
-int putCommand(char *command, int commandSize, int socketFD) {
-    // Since this requires minimal chatter with the client, we can fork straight
-    // away. Then we'll make a new socket and transfer with that.
-    int pid = fork();
-    if (pid < 0) {
-        perror("Error on fork : ");
-    } else if (pid > 0) {
-        return EXIT_SUCCESS; // make the parent leave
-    }
-    // Now we're in the child domain
-    close(socketFD);
-    // Make a new socket to talk through
-    socketFD = defineSocketToServer(HOST_NAME, PORT);
+void putCommand(char *command, int commandSize, int socketFD) {
     // Begin the request for the transfer
     write(socketFD, command, commandSize);
     // Sends the files that the server requests
@@ -101,8 +135,6 @@ int putCommand(char *command, int commandSize, int socketFD) {
         }
         transferRequestedFile(fileRequest, socketFD);
     }
-    close(socketFD);
-    exit(EXIT_SUCCESS); // Close this fork
 }
 
 /**
@@ -125,11 +157,12 @@ void waitForKeypress() {
     information = copy; // Reset our terminal to canonical mode
 }
 
-void printXLinesAtATime(char *file, int fileSize, int numberOfLines) {
+void printXLinesAtATime(char *toPrint, int fileSize, int numberOfLines) {
     printf("\n=================================================================\n");
     int index = 0;
     int currentLines = 0;
     int needsCheck = FALSE;
+    printf(" %-4i| ", currentLines + 1);
     while (TRUE) {
         if (currentLines % numberOfLines == 0 && needsCheck) {
             printf("Press any key to continue...");
@@ -139,12 +172,12 @@ void printXLinesAtATime(char *file, int fileSize, int numberOfLines) {
         } else if (index > fileSize) {
             break; // its done
         }
-        if (file[index] == '\n') {
-            printf("%-4i|", currentLines + 1);
+        printf("%c", toPrint[index]);
+        if (toPrint[index] == '\n') {
+            printf(" %-4i| ", currentLines + 2);
             currentLines++;
             needsCheck = TRUE;
         }
-        printf("%c", file[index]);
         index++;
         fflush(stdout);
     }
@@ -171,6 +204,45 @@ int getCommand(char *command, int commandSize, int socketFD) {
     return EXIT_SUCCESS;
 }
 
+int saveFile(char *fileString, int fileSize, char *fileName) {
+    FILE *filePointer = fopen(fileName, "w");
+    if (filePointer == NULL) {
+        perror("Failed to open file");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < fileSize; i++) {
+        fputc(fileString[i], filePointer);
+    }
+    fclose(filePointer);
+    return EXIT_SUCCESS;
+}
+
+int runCommand(char *command, int commandSize, int socketFD) {
+    // Now the question is whether we requested a force
+    char **splitCommand;
+    int words = split(command, &splitCommand, ' ');
+    int forced = FALSE;
+    if (words - 2 >= 0 && (strncmp(splitCommand[words - 2], "-f", 2)) == 0) {
+        forced = TRUE;
+    }
+
+    char fileSizeBuffer[10];
+    write(socketFD, command, commandSize); // Straight away send the request
+    read(socketFD, fileSizeBuffer, sizeof(fileSizeBuffer));
+    int fileSize = atoi(fileSizeBuffer);
+    char fileText[fileSize];
+    // Now we read the file from them
+    read(socketFD, fileText, fileSize);
+    if (forced) {
+        printf("String: %s\n Size %d\n Name %s", fileText, fileSize, splitCommand[words - 1]);
+        saveFile(fileText, fileSize, splitCommand[words - 1]);
+    } else {
+        // We can just use the printXLines function from before
+        printXLinesAtATime(fileText, fileSize, 40);
+    }
+    return EXIT_SUCCESS;
+}
+
 /**
  * Some commands require special interaction with the server, and some don't
  * require any printing - as such they can fork away from this process and run
@@ -184,6 +256,7 @@ int handleCommand(char *command, int commandSize, int socketFD) {
     } else if (strncmp(command, "get", 3) == 0) {
         getCommand(command, commandSize, socketFD);
     } else if (strncmp(command, "run", 3) == 0) {
+        runCommand(command, commandSize, socketFD);
     } else if (strncmp(command, "list", 4) == 0) {
 
     } else if (strncmp(command, "sys", 3) == 0) {
