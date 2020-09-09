@@ -6,24 +6,24 @@
 #ifndef KRUOR_SERVERTOOLS_H
 #define KRUOR_SERVERTOOLS_H
 
-/**
- * Fills the buffer with the server's current time
- * @param buffer
- */
-void getTime(char *buffer);
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-/**
- * Fills the buffer with the host's computer name
- * @param buffer
- */
-void getHost(char *buffer);
 
-/**
- * Fills the buffer with the operating system type
- * @param buffer : to fill
- */
-void getType(char *buffer);
+#define BUFF_MAX 1024
+#define FALSE 0
+#define TRUE 1
 
-void processLabCommand(char *buffer);
+void putCommand(char *command, int socketFD);
+
+void getCommand(char *command, int socketFD);
+
+void runCommand(char *command, int socketFD);
+
+void listCommand(char *command, int socketFD);
+
+void sysCommand(int socketFD);
 
 #endif //KRUOR_SERVERTOOLS_H

@@ -1,0 +1,320 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithmicx}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\geometry{left = 2.5cm, right=2.5cm, bottom=2.5cm, top=2.5cm}
+
+\title{Engineering project proposal: Garage door}
+\author{Nick van der Merwe - s5151332 - nick.vandermerwe@griffithuni.edu.au}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{1pt}
+\fancyhf{}
+\rhead{2802ICT - Assignment 2}
+\chead{Griffith University}
+\lhead{Nick van der Merwe - s5151332}
+\rfoot{Page \thepage}
+
+\begin{document}
+    \maketitle
+
+%==============================================================================
+
+
+    \section{Problem Statement}
+    A server-client system is required, where the server functions as a remote point
+    to upload programs and run them. Additionally, it should be able to fetch file
+    contents, return its CPU model, list the programs on the server and list the
+    contents of the programs.
+
+
+    \section{User Requirements}
+    The user should be able to launch the client, (given the server is running
+    separately, on its own) and connect via the IP and host. Once connected,
+    the following commands should work:
+
+    \begin{enumerate}
+        \item "Put": Sends a file to the server
+        \item "Get": Fetches a file from the system and print it to the screen
+        \item or save onto a file
+        \item Run a program on the server side, with the option of additional
+        arguments and downloading it to a localfile
+        \item List the program names, list the program's directories and
+        optionally change to a long list view
+        \item sys, which grabs the server's operating system and version
+        alongside its CPU model.
+    \end{enumerate}
+
+
+    \section{Software Requirements}
+    There should be two Cygwin compiled executables, server and client. Out
+    of these the server should be launched first, and the user should launch
+    the client and connect to the port.
+    \begin{enumerate}
+        \item The client side should specify the server's IP address through
+        the commndline arguments - ./client <IP>
+        \item On the client side, the time for each read should be reported.
+        An added detail is what the read is for, and a maximum timeout of
+        500ms. This is to prevent bugs in case the server crashes.
+        \item The client must be a shell format and given that it isn't
+        currently running a command, must always be able to accept input.
+        \item The server should not block input from a client when it
+        requests it. In other words, a single client must not hog the server
+        and stop others from using it
+        \item For each request from a client, the server must split into a
+        new process.
+        \item The server must be able to handle multiple clients at the same
+        time
+        \item When the client types in \textit{put \[progname\] \[sourcefile
+        (s)\] \[-f\]} the server should download the specified files into a
+        directory named the specified program name. If the -f option is
+        given, it will delete everything in the directory before doing this.
+        \item When the client types in \textit{get progname sourcefile} the
+        source file should be printed to the client's screen 40 lines at a
+        time with any keypress to continue
+        \item When the client types in \textit{run progname \[args\] \[-f
+        localfile\]}, it will run the specified program and pass the given
+        arguments. if -f is specified, the following word is the file to
+        download the output on the client's side to, otherwise it will be
+        printed 40 lines at a time with a keypress in between.
+        \item When the client types in \textit{list \[-l\] \[progname\]} it
+        returns the list of program names or the contents of the specified
+        program name, staggered every 40 lines and continued with a keypress. If
+        the -l parameter is given then it will print the view in a long view.
+        \item The sys command will return the CPU and operating system
+        \item Whenever an error occurs on the server side, the server will
+        report what happened and kill the process. On the other side, every read
+        times out after five seconds with a message for what the client was
+        trying to read.
+        \item The process table must be properly cleared; zombie processes must
+        be killed. These will be reported on the server side whenever one occurs.
+        \end{enumerate}
+    \section{Software design}
+        In terms of our file organisation, both the server and client will have two
+        major files. The first handles the sockets while the second
+        manages each command. While this can result in reasonably larger files,
+        a rule of thumb is 30 lines of code per function, and a maximum of 30
+        functions per class. Thus 900 lines of code per class; in this case
+        we're using C, so we treat a file like this instead.
+        \\ \tab
+        Our basic logical block diagram looks like this:
+        \begin{figure}
+            \centering
+            \includegraphics[scale=0.5]{figures/highLevelDesign.pdf}
+            \caption{High level design of the interactions}
+        \end{figure}
+        \subsection*{Functions}
+
+        Due to the programming style there are a large number of functions, but
+        they will be broken up into the client side, server side and major
+        functions/minor functions.
+        \subsubsection*{Client side}
+
+        \begin{enumerate}
+            \item \textit{main(argc, argv)} - Runs defineSocketToServer() and chatWithServer()
+            \item \textit{defineSocketToServer(char* host, int portNumber)}.
+            Defines the socket, specifies the host and port and connects to
+            it
+            \item \textit{chatWithServer} - Grabs input and runs handleCommand()
+            \begin{enumerate}
+                \item \textit{handleCommand(char*command, int commandSize, int
+                socketFD)} - Interprets the command and runs the appropriate
+                function 
+            \end{enumerate}
+            \item Timer functions, major = timeOutRead
+            \begin{enumerate}
+                \item \textit{startTimer()} - Begins the timer for reportTime();
+                \item \textit{reportTime(char*task)} - Reports the time and
+                prints what task it was
+                \item \textit{timeOutRead(int socket, char *buffer, int
+                sizeOfBuffer, char *task)} - Allows a maximum of five seconds
+                for a read to run and reports how long it took with the task.
+            \end{enumerate}
+            \item Word splitting, major = splitIntoWords
+            \begin{enumerate}
+                \item \textit{countWords(char * string)} - counts how many words
+                there are in the given string, split only by space characters
+                \item \textit{splitIntoWords(char *string, char ***toFill)} -
+                Fills the given triple pointer with the space seperated tokens
+                of the string. Note that it requires a free on the toFill
+            \end{enumerate}
+            \item Loading and measuring files
+            \begin{enumerate}
+                \item \textit{loadFileIntoString(char * toFill, FILE *
+                filePointer)} - loads the file into the specified string
+                \item \textit{measureFileBytes(FILE * filePointer)} - Counts how
+                many letters are in a file
+            \end{enumerate}
+            \item Put command
+            \begin{enumerate}
+                \item \textit{transferRequestedFile(char *fileRequest, int socketFD)} -
+                sends the file that's asked for
+                \item \textit{putCommand(char * command, int commandSize, int
+                socketFD)} - Interacts with the server to run the put command
+            \end{enumerate}
+            \item Printing large strings
+            \begin{enumerate}
+                \item \textit{waitForKeypress()} since C doesn't have a distinct
+                command for a single keypress, this was written so that not only
+                the enter key can be pressed
+                \item \textit{printXLinesAtATime(char*string, int stringSize,
+                int numberOfLines)} - Prints the lines in a neat format for the
+                user to read.
+            \end{enumerate}
+            \item Get command
+            \begin{enumerate}
+                \item \textit{getCommand(char * command, int commandSize, int
+                socketFD)} - Handles the get command
+                \item \textit{saveFile(char * fileString, int fileSize, char
+                *fileName)} - Saves a file into the specified file relative to
+                the current working directory
+            \end{enumerate}
+            \item \textit{runCommand(char * command, int commandSize, int
+            socketFD)} handles the run command
+            \item \textit{listCommand(char * command, int commandSize, int
+            socketFD)} - handles list command
+            \item \textit{sysCommand(char * command, int commandSize, int
+            socketFD)} - handles system command
+        \end{enumerate}
+
+        \subsubsection*{Server side}
+        Server Driver
+        \begin{enumerate}
+            \item \textit{main()} - Parses the port and runs signal(killZombieProcess), 
+            openTCPSocket() and host()
+            \item \textit{killZombieProcess(int signal)} - Kills any dead forks
+            - ran with signal()
+            \item openTCPSocket
+            \begin{enumerate}
+                \item \textit{defineTCPSocket(int * socketFD)} - Calls the
+                socket() command with error checking
+                \item \textit{specifySockAddress\_in(struct sockaddr\_in *const }
+                socketAddress, int portNumber) - fills the sockaddr\_in with the
+                required constants and port number
+                \item \textit{bindSocketAddress\_inToSocket(const int *
+                socketFD, const struct sockaddr\_in *socketAddress)} - Runs bind
+                on the sockaddr and socket with error checking
+                \item \textit{listenToSocket(int const * socketFD, int const
+                backlog)} - runs listen() on the socket with error checking
+                \item \textit{openTCPSocket(int const portNumber, int const
+                backlog)} - Opens a socket by running all the minor commands
+                here
+            \end{enumerate}
+        \end{enumerate}
+        Server tools
+        \begin{enumerate}
+            \item Word splitting, major = splitIntoWords
+            \begin{enumerate}
+                \item \textit{countWords(char * string)} - counts how many words
+                there are in the given string, split only by space characters
+                \item \textit{splitIntoWords(char *string, char ***toFill)} -
+                Fills the given triple pointer with the space seperated tokens
+                of the string. Note that it requires a free on the toFill
+            \end{enumerate}
+            \item Directory commands
+            \begin{enumerate}
+                \item \textit{deleteDirectoryContents, char * path} - Deletes
+                the contents of the specified directory
+                \item \textit{getProgramsDirectory(char * fullDirectory)} -
+                Fills the full directory with the path to the server's programs
+                directory
+                \item \textit{getPrognameDirectory(char *fullDirectory, char
+                *folder)} - Gets the full directory to the given program
+                \item \textit{getProgramFileDirectory(char * fullDirectory, char
+                *directory, char * fileName)} - fills the full directory with
+                the absolute path to a specific file in a program
+                \item \textit{makeDirectoryOrDeleteIfForced(char * dirName, int
+                forced)} - Makes a directory or deletes it if its forced
+            \end{enumerate}
+            \item putCommand
+            \begin{enumerate}
+                \item \textit{downloadFile(int socketFD, char * directory, char
+                *fileName, int fileNameLen, int forced)} - Downloads the
+                specified file into the given directory
+                \item \textit{putCommand(char * command, int socketFD)} -
+                Handles the put command
+            \end{enumerate}
+            \item Get command
+            \begin{enumerate}
+                \item \textit{measureFileBytes(FILE * filePointer)} - Measures
+                how many bytes are in a file
+                \item \textit{loadFileIntoString(char * toFill, FILE *
+                filePointer)} - Loads a file into the given string
+                \item \textit{sendFile(File * fp, int socketFD)} - Sends the
+                given file to the socket
+                \item \textit{getCommand(char * command, int socketFD)} -
+                Handles the get command
+            \end{enumerate}
+            \item Run command
+            \begin{enumerate}
+                \item \textit{extractRunCommand(char * extractInto, char **
+                splitCommand, int endOfSplitCommand)} - Finds what the actual
+                command that should be ran with popen() is in the passed command
+                \item \textit{compileFile(char * directory)} - Compiles the directory
+                \item \textit{loadInPipe(char ** loadInto, FILE * pipePointer)}
+                - loads the pipe into the string. Note that the string needs to
+                be freed afterwards.
+                \item \textit{sendPipe(FILE * pipePointer, int socketFD)} -
+                Sends the pipe to the socket
+                \item \textit{runFileAndSendOutput(int socketFD, char *
+                progName)} - runs the file and sends its output
+                \item \textit{runCommand(char * command, int socketFD)} -
+                handles the run command
+            \end{enumerate}
+            \item List command
+            \begin{enumerate}
+                \item \textit{defineListVariables(char * command, int
+                *wasProgNameRequested, int *longList, char *progname)} - Defines
+                all the variables needed for the list command from the passed
+                command
+                \item \textit{openListCommand(const int wasProgNameRequested,
+                const int longList, char * progName)} - popens() on the list
+                command
+                \item \textit{listCommand(char * command, int socketFD)} - Runs
+                the list command
+            \end{enumerate}
+            \item \textit{sysCommand(int socketFD)} - Sends the system
+            information to the socket.
+        \end{enumerate}
+        For more information on these, read the code. There are documentation
+        comments everywhere.
+
+        \subsection*{Data structures}
+        Arrays were used.
+        \subsection*{Algorithms}
+        The only moderately complicated algorithm was sending commands.
+        Otherwise the code basically reads like the high level design with added
+        error checking. To send a file, the side that's sending it posts how
+        large it is in bytes, the other side allocates that, then the source
+        sends the file itself.
+        \begin{figure}
+            \centering
+            \includegraphics[scale=1]{figures/psuedo.jpg}
+            \caption{Psuedocode for sending large pieces of texts, typically files}
+        \end{figure}
+    \newpage
+    \section{Requirement Acceptance Tests}
+    Everything works.
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics[scale=0.8]{figures/requirements.jpg}
+    \end{figure}
+    \newpage
+    \section{Detailed Software Testing}
+    Everything works.
+    \begin{figure}[ht!]
+        \centering
+        \includegraphics{figures/extraTests.jpg}
+    \end{figure}
+
+    \section{User Instructions}
+    Run server, run client. Use commands in the user requirements section. The
+    only special thing is that files in the put command must be in the exact
+    directory as the command - it can't be outside that.
+\end{document}
