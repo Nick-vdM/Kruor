@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <wait.h>
+#include <ctype.h>
 
 
 /**
@@ -51,7 +52,7 @@ void chatWithServer(int socketFD) {
 
         int pid = fork();
         int status;
-        if(pid == 0){
+        if (pid == 0) {
             handleCommand(buffer, sizeof(buffer), socketFD);
         }
         waitpid(pid, &status, 0);
@@ -95,7 +96,35 @@ int defineSocketToServer(char *host, int portNumber) {
     return socketFD;
 }
 
+void welcomeMessage() {
+    printf("///////////////////////////////////////////////////////////////\n"
+           "///////////██╗░░██╗██████╗░██╗░░░██╗░█████╗░██████╗░///////////\n"
+           "///////////██║░██╔╝██╔══██╗██║░░░██║██╔══██╗██╔══██╗///////////\n"
+           "///////////█████═╝░██████╔╝██║░░░██║██║░░██║██████╔╝///////////\n"
+           "///////////██╔═██╗░██╔══██╗██║░░░██║██║░░██║██╔══██╗///////////\n"
+           "///////////██║░╚██╗██║░░██║╚██████╔╝╚█████╔╝██║░░██║///////////\n"
+           "///////////╚═╝░░╚═╝╚═╝░░╚═╝░╚═════╝░░╚════╝░╚═╝░░╚═╝///////////\n"
+           "///////////////////////////////////////////////////////////////\n"
+           "========== Made by Nick van der Merwe for 2803ICT   ===========\n"
+           "========== ------------- COMMANDS ---------------   ===========\n"
+           "========== put progname sourcefiles[s] [-f]         ===========\n"
+           "========== get progname sourcefile                  ===========\n"
+           "========== run progname [args] [-f localfile]       ===========\n"
+           "========== list [-l] [progname]                     ===========\n"
+           "========== sys                                      ===========\n"
+           "///////////////////////////////////////////////////////////////\n\n");
+}
+
+void killZombieProcess(int signal) {
+    int processStatus;
+    if (waitpid(-1, &processStatus, WNOHANG) < 0) {
+        printf("[[[Executed a zombie]]]\n");
+    }
+}
+
 int main(int argc, char *argv[]) {
+    signal(SIGCHLD, killZombieProcess); // make sure zombies are killed
+    welcomeMessage();
     // Check whether an ip and port was passed - if they were then
     // use those instead of the globals
     char hostName[HOSTNAME_MAX] = HOST_NAME;
@@ -103,6 +132,15 @@ int main(int argc, char *argv[]) {
     if (argc > 2) {
         strcpy(hostName, argv[1]);
         port = atoi(argv[2]);
+    } else if (argc == 2) {
+        // Check if it contains alpha or ".", if it does then its the hostname
+        for (int i = 0; i < strlen(argv[1]); i++) {
+            if (isalpha(argv[1][i]) || argv[1][i] == '.') {
+                strcpy(hostName, argv[1]);
+                break;
+            }
+        }
+        port = atoi(argv[2]); // Otherwise its a port
     } else {
         printf("Protip: You can pass the ip port when running the client! "
                "./client <IP> <PORT>\n");

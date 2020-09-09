@@ -290,6 +290,19 @@ void getCommand(char *command, int socketFD) {
 
 
 // =================== Run command =============================================
+/**
+ * Tells the client how the popen went
+ * @param state
+ */
+void tellClientPipeState(int socketFD, int state) {
+    char buffer[BUFF_MAX];
+    sprintf(buffer, "%i", state);
+    write(socketFD, buffer, sizeof(buffer));
+
+    // if it was an actual error commit suicide
+    if(state != 0) exit(EXIT_FAILURE);
+}
+
 void extractRunCommand(char *extractInto, char **splitCommand,
                        int endOfSplitCommand) {
     bzero(extractInto, BUFF_MAX);
@@ -303,8 +316,9 @@ void extractRunCommand(char *extractInto, char **splitCommand,
  * things for us. Since make manages our time based constraint of the executable
  * should only be compiled if there's no change in other files it works fine.
  * @param directory
+ * @return the error code of pclose
  */
-void compileFile(char *directory) {
+int compileFile(char *directory) {
     // In our /programs/ directory there's a generalised makefile
     char progNameDir[MAX_PATH_LENGTH];
     getPrognameDirectory(progNameDir, directory);
@@ -320,7 +334,7 @@ void compileFile(char *directory) {
     }
     // popens only run if you read it? So empty it out
     while (fgetc(pipePointer) != EOF) {};
-    pclose(pipePointer);
+    return pclose(pipePointer);
 }
 
 int loadInPipe(char **loadInto, FILE *pipePointer) {
@@ -344,19 +358,26 @@ int loadInPipe(char **loadInto, FILE *pipePointer) {
     return currentIndex;
 }
 
-void sendPipe(FILE *pipePointer, int socketFD) {
-    // Due to how a pipe cannot use fseek and can only be read once
-    // its quite difficult to get the size of it then send it as if
-    // its a normal file. So we're going to make a vector<> structure
-    // and fill that instead
-    char *pipeText;
-    int pipeSize = loadInPipe(&pipeText, pipePointer);
-    char fileSizeString[10];
-    sprintf(fileSizeString, "%d", pipeSize);
-    write(socketFD, fileSizeString, sizeof(fileSizeString));
-    write(socketFD, pipeText, pipeSize);
-    free(pipeText);
+int sendBigString(int socket, char *string, int size) {
+    char buffer[10];
+    sprintf(buffer, "%i", size);
+    write(socket, buffer, 10);
+    write(socket, string, size);
 }
+
+//void sendPipe(FILE *pipePointer, int socketFD) {
+//    // Due to how a pipe cannot use fseek and can only be read once
+//    // its quite difficult to get the size of it then send it as if
+//    // its a normal file. So we're going to make a vector<> structure
+//    // and fill that instead
+//    char *pipeText;
+//    int pipeSize = loadInPipe(&pipeText, pipePointer);
+//    char fileSizeString[10];
+//    sprintf(fileSizeString, "%d", pipeSize);
+//    write(socketFD, fileSizeString, sizeof(fileSizeString));
+//    write(socketFD, pipeText, pipeSize);
+//    free(pipeText);
+//}
 
 void runFileAndSendOutput(int socketFD, char *progName) {
     char executableLocation[MAX_PATH_LENGTH] = "\""; // make sure its surrounded
@@ -370,8 +391,12 @@ void runFileAndSendOutput(int socketFD, char *progName) {
     // Now we just popen this and send the output to the client
     printf("Process opening %s\n", executableLocation);
     FILE *pipePointer = popen(executableLocation, "r");
-    sendPipe(pipePointer, socketFD);
-    pclose(pipePointer);
+    char *pipeMessage;
+    int size = loadInPipe(&pipeMessage, pipePointer);
+    int error = pclose(pipePointer);
+    tellClientPipeState(socketFD, error);
+    sendBigString(socketFD, pipeMessage, size);
+    free(pipeMessage);
 }
 
 void runCommand(char *command, int socketFD) {
@@ -389,7 +414,7 @@ void runCommand(char *command, int socketFD) {
     // Now that we have that we need to extract the actual run command
     char extractInto[BUFF_MAX];
     extractRunCommand(extractInto, splitCommand, endOfCommand);
-    compileFile(splitCommand[1]);
+    int error = compileFile(splitCommand[1]);
     runFileAndSendOutput(socketFD, extractInto);
 
     for (int i = 0; i < words; i++) free(splitCommand[i]);
@@ -448,7 +473,12 @@ void listCommand(char *command, int socketFD) {
     defineListVariables(command, &wasProgNameRequested, &longList, progName);
     FILE *pipePointer = openListCommand(wasProgNameRequested,
                                         longList, progName);
-    sendPipe(pipePointer, socketFD);
+    char *text;
+    int size = loadInPipe(&text, pipePointer);
+    int error = pclose(pipePointer);
+    tellClientPipeState(socketFD, error);
+    sendBigString(socketFD, text, size);
+    free(text);
 }
 
 // =========================== System command ==================================
@@ -458,30 +488,31 @@ void listCommand(char *command, int socketFD) {
  */
 void getSystemType(char *buffer) {
     // More information at https://stackoverflow.com/questions/15580179/how-do-i-find-the-name-of-an-operating-system
-    #ifdef _WIN32
-        strcpy(buffer, "Windows 32-bit");
-    #elif _WIN64
-        strcpy(buffer, "Windows 64-bit");
-    #elif __APPLE__ || __MACH__
-        strcpy(buffer, "Mac OSC");
-    #elif __linux__
-        strcpy(buffer, "Linux");
-    #elif __FreeBSD__
-        strcpy(buffer, "FreeBSD");
-    #elif __unix || __unix__
-        strcpy(buffer, "Unix");
-    #else
-        strcpy(buffer, "Other");
-    #endif
+#ifdef _WIN32
+    strcpy(buffer, "Windows 32-bit");
+#elif _WIN64
+    strcpy(buffer, "Windows 64-bit");
+#elif __APPLE__ || __MACH__
+    strcpy(buffer, "Mac OSC");
+#elif __linux__
+    strcpy(buffer, "Linux");
+#elif __FreeBSD__
+    strcpy(buffer, "FreeBSD");
+#elif __unix || __unix__
+    strcpy(buffer, "Unix");
+#else
+    strcpy(buffer, "Other");
+#endif
 }
 
 /**
  * Runs uname -a because this can only compile on Unix anyways. Requires free'ing
  * @param toFill
  */
-void getSystemVersion(char **toFill) {
+int getSystemVersion(char **toFill) {
     FILE *uname = popen("uname -r", "r");
     loadInPipe(toFill, uname);
+    int error = pclose(uname);
 }
 
 /**
@@ -504,7 +535,8 @@ void sysCommand(int socketFD) {
             strcat(line, "\t Type: ");
             strcat(line, buffer);
             char *kernelVersion;
-            getSystemVersion(&kernelVersion);
+            int error = getSystemVersion(&kernelVersion);
+            tellClientPipeState(socketFD, error);
             strcat(line, " Kernel: ");
             strcat(line, kernelVersion);
 

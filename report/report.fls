@@ -113,20 +113,12 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
 OUTPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/report.pdf
 INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
-INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf
-INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf
-INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
+INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf
+INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf
+INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/psuedo.jpg
 INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/psuedo.jpg
@@ -140,9 +132,7 @@ INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803I
 INPUT /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/report.aux
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
-INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb
-INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb

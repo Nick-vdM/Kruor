@@ -296,6 +296,22 @@ int saveFile(char *fileString, int fileSize, char *fileName) {
 }
 
 // ========================= Smaller Commands ================================
+
+void checkPipeCommand(int socketFD, char * task){
+    char buffer[BUFFER_MAX];
+    timeOutRead(socketFD, buffer, sizeof(buffer), task);
+    if((strncmp(buffer, "0", 1)) != 0) {
+        // something went wrong
+        int error = atoi(buffer);
+        if(error < 0){
+            printf("%s failed : Failed to close pipe %s", task, buffer);
+        } else if (error > 0){
+            printf("%s failed : Failed to run command %s", task, buffer);
+        }
+        exit(EXIT_FAILURE);
+    }
+}
+
 /**
  * Granted the program exists, this runs it
  * @param command
@@ -313,6 +329,8 @@ void runCommand(char *command, int commandSize, int socketFD) {
 
     char fileSizeBuffer[10];
     write(socketFD, command, commandSize); // Straight away send the request
+    checkPipeCommand(socketFD, "compiling command");
+    checkPipeCommand(socketFD, "running command");
     timeOutRead(socketFD, fileSizeBuffer, sizeof(fileSizeBuffer), "asking for size of file");
     int fileSize = atoi(fileSizeBuffer);
     char fileText[fileSize];
@@ -329,6 +347,7 @@ void runCommand(char *command, int commandSize, int socketFD) {
 void listCommand(char *command, int commandSize, int socketFD) {
     // Request the list
     write(socketFD, command, commandSize);
+    checkPipeCommand(socketFD, "running list command");
     char fileSizeString[10];
     timeOutRead(socketFD, fileSizeString, sizeof(fileSizeString), "asking for size of file");
     int fileSize = atoi(fileSizeString);
@@ -339,6 +358,7 @@ void listCommand(char *command, int commandSize, int socketFD) {
 
 void sysCommand(char *command, int commandSize, int socketFD) {
     write(socketFD, command, commandSize);
+    checkPipeCommand(socketFD, "system command");
     char lineSizeString[10];
     timeOutRead(socketFD, lineSizeString, sizeof(lineSizeString), "asking for the line size");
     int lineSize = atoi(lineSizeString);

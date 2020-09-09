@@ -42,7 +42,7 @@
     \begin{enumerate}
         \item "Put": Sends a file to the server
         \item "Get": Fetches a file from the system and print it to the screen
-        \item or save onto a file
+        or save onto a file
         \item Run a program on the server side, with the option of additional
         arguments and downloading it to a localfile
         \item List the program names, list the program's directories and
@@ -71,19 +71,19 @@
         new process.
         \item The server must be able to handle multiple clients at the same
         time
-        \item When the client types in \textit{put \[progname\] \[sourcefile
-        (s)\] \[-f\]} the server should download the specified files into a
+        \item When the client types in \textit{put [progname] [sourcefile
+        (s)] [-f]} the server should download the specified files into a
         directory named the specified program name. If the -f option is
         given, it will delete everything in the directory before doing this.
         \item When the client types in \textit{get progname sourcefile} the
         source file should be printed to the client's screen 40 lines at a
         time with any keypress to continue
-        \item When the client types in \textit{run progname \[args\] \[-f
-        localfile\]}, it will run the specified program and pass the given
+        \item When the client types in \textit{run progname [args] [-f
+        localfile]}, it will run the specified program and pass the given
         arguments. if -f is specified, the following word is the file to
         download the output on the client's side to, otherwise it will be
         printed 40 lines at a time with a keypress in between.
-        \item When the client types in \textit{list \[-l\] \[progname\]} it
+        \item When the client types in \textit{list [-l] [progname]} it
         returns the list of program names or the contents of the specified
         program name, staggered every 40 lines and continued with a keypress. If
         the -l parameter is given then it will print the view in a long view.
@@ -95,6 +95,7 @@
         \item The process table must be properly cleared; zombie processes must
         be killed. These will be reported on the server side whenever one occurs.
         \end{enumerate}
+        \newpage
     \section{Software design}
         In terms of our file organisation, both the server and client will have two
         major files. The first handles the sockets while the second
@@ -104,11 +105,13 @@
         we're using C, so we treat a file like this instead.
         \\ \tab
         Our basic logical block diagram looks like this:
-        \begin{figure}
+        \subsection*{High level design}
+        \begin{figure}[ht!]
             \centering
             \includegraphics[scale=0.5]{figures/highLevelDesign.pdf}
             \caption{High level design of the interactions}
         \end{figure}
+        \newpage
         \subsection*{Functions}
 
         Due to the programming style there are a large number of functions, but
@@ -317,4 +320,16 @@
     Run server, run client. Use commands in the user requirements section. The
     only special thing is that files in the put command must be in the exact
     directory as the command - it can't be outside that.
+    \\ \tab
+    In terms of how this was compiled, open a Cygwin terminal in the appropriate
+    directory with all the source files and run make. Then make clean, and
+    ./client or ./server. Note the server also needs a file called programs with
+    a .makefile inside of it, as attached, to function.
+    \\ \tab Example directories were also inserted so the marker has an easier
+    time testing. In the client folder there is sendMe1.txt and sendMe2.txt and
+    hello.txt for sending. On the server side, prognames "hello" you can run for
+    a simple hello world that includes multiple files. Additionally, the "lots"
+    folder just has a large number of empty text files to test the list command
+    on. Note that the user should make sure to not delete the .makefile inside
+    the server programs since that's used to compile programs in the prognames.
 \end{document}

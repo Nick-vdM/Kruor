@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.9.9)  9 SEP 2020 11:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2020.9.9)  9 SEP 2020 12:02
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -574,51 +574,51 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 25.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-<figures/highLevelDesign.pdf, id=10, 781.96138pt x 785.81581pt>
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
+<figures/highLevelDesign.pdf, id=14, 781.96138pt x 785.81581pt>
 File: figures/highLevelDesign.pdf Graphic file (type pdf)
 <use figures/highLevelDesign.pdf>
-Package pdftex.def Info: figures/highLevelDesign.pdf  used on input line 109.
+Package pdftex.def Info: figures/highLevelDesign.pdf  used on input line 111.
 (pdftex.def)             Requested size: 390.97974pt x 392.90695pt.
- [2] [3 </e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf
+ [3 </e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf
 
 pdfTeX warning: pdflatex (file /e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/highLevelDesign.pdf): PDF inclusion: invalid other resource which is no dict (key 'ProcSets', type <array>); ignored.
 >] [4] [5]
-Overfull \hbox (11.33902pt too wide) in paragraph at lines 277--279
+Overfull \hbox (11.33902pt too wide) in paragraph at lines 280--282
 []\OT1/cmr/m/it/10 openListCommand(const int wasProg-NameRequested, const int longList, char * prog-Name) \OT1/cmr/m/n/10 - popens()
  []
 
-<figures/psuedo.jpg, id=52, 276.28218pt x 138.5175pt>
+<figures/psuedo.jpg, id=50, 276.28218pt x 138.5175pt>
 File: figures/psuedo.jpg Graphic file (type jpg)
 <use figures/psuedo.jpg>
-Package pdftex.def Info: figures/psuedo.jpg  used on input line 298.
+Package pdftex.def Info: figures/psuedo.jpg  used on input line 301.
 (pdftex.def)             Requested size: 276.2815pt x 138.51715pt.
 [6 </e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/psuedo.jpg>]
-<figures/requirements.jpg, id=56, 359.09157pt x 643.6547pt>
+<figures/requirements.jpg, id=54, 359.09157pt x 643.6547pt>
 File: figures/requirements.jpg Graphic file (type jpg)
 <use figures/requirements.jpg>
-Package pdftex.def Info: figures/requirements.jpg  used on input line 306.
+Package pdftex.def Info: figures/requirements.jpg  used on input line 309.
 (pdftex.def)             Requested size: 287.27364pt x 514.92445pt.
  [7 </e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/requirements.jpg>]
-<figures/extraTests.jpg, id=61, 383.18156pt x 307.90031pt>
+<figures/extraTests.jpg, id=59, 383.18156pt x 307.90031pt>
 File: figures/extraTests.jpg Graphic file (type jpg)
 <use figures/extraTests.jpg>
-Package pdftex.def Info: figures/extraTests.jpg  used on input line 313.
+Package pdftex.def Info: figures/extraTests.jpg  used on input line 316.
 (pdftex.def)             Requested size: 383.18062pt x 307.89955pt.
  [8 </e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/figures/extraTests.jpg>] (/e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/report.aux) ) 
 Here is how much of TeX's memory you used:
- 3595 strings out of 494847
- 47515 string characters out of 6179081
+ 3585 strings out of 494847
+ 47409 string characters out of 6179081
  115428 words of memory out of 5000000
- 6848 multiletter control sequences out of 15000+600000
- 11849 words of font info for 46 fonts, out of 8000000 for 9000
+ 6840 multiletter control sequences out of 15000+600000
+ 10150 words of font info for 38 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  41i,10n,43p,401b,335s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on "/e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/report.pdf" (8 pages, 451965 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+Output written on "/e/OneDrive - Griffith University/Second Year/2. Second Trimester/D. 2803ICT - Systems and Distributed Computing/Kruor/report/report.pdf" (8 pages, 436556 bytes).
 PDF statistics:
- 92 PDF objects out of 1000 (max. 8388607)
- 63 compressed objects within 1 object stream
+ 84 PDF objects out of 1000 (max. 8388607)
+ 57 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
